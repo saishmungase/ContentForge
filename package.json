@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "@motiadev/adapter-bullmq-events": "^0.17.9-beta.191",
+    "@motiadev/core": "^0.17.9-beta.191",
+    "@motiadev/plugin-bullmq": "^0.17.9-beta.191",
+    "@motiadev/plugin-endpoint": "^0.17.9-beta.191",
+    "@motiadev/plugin-logs": "^0.17.9-beta.191",
+    "@motiadev/plugin-observability": "^0.17.9-beta.191",
+    "@motiadev/plugin-states": "^0.17.9-beta.191",
+    "motia": "^0.17.9-beta.191",
+    "zod": "^4.1.12"
+  },
+  "scripts": {
+    "dev": "motia dev"
+  },
+  "devDependencies": {
+    "@motiadev/workbench": "^0.17.9-beta.191",
+    "@types/react": "^19.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
