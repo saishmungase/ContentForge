@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "@motiadev/adapter-bullmq-events": "^0.17.9-beta.191",
     "@motiadev/core": "^0.17.9-beta.191",
@@ -9,8 +10,10 @@
     "@motiadev/plugin-states": "^0.17.9-beta.191",
     "dotenv": "^17.2.3",
     "fastforwardit": "^1.0.1",
+    "groq-sdk": "^0.37.0",
     "motia": "^0.17.9-beta.191",
-    "zod": "^4.1.12"
+    "youtube-dl-exec": "^3.0.27",
+    "zod": "^4.2.1"
   },
   "scripts": {
     "dev": "motia dev"
