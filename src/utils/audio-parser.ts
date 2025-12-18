@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import youtubedl from 'youtube-dl-exec';
 import 'dotenv/config';
+import { Logger } from "motia";
 
 if (!process.env.GROQ_API_KEY) {
   throw new Error('Missing GROQ_API_KEY environment variable');
@@ -50,6 +51,7 @@ async function downloadTempFile(url: string): Promise<string> {
 export const get_transcript = async (
   url: string, 
   purpose: string,
+  logger : Logger,
   options: TranscriptOptions = {}
 ): Promise<string> => {
   
@@ -60,6 +62,7 @@ export const get_transcript = async (
     if (!url || typeof url !== 'string') throw new Error('Valid URL is required');
     if (!purpose || typeof purpose !== 'string') throw new Error('Valid purpose is required');
 
+    logger.info(`⬇️ Downloading audio via yt-dlp...`, { url });
     if (options.audioFilePath) {
       currentFilePath = options.audioFilePath;
       if (!fs.existsSync(currentFilePath)) {
@@ -72,7 +75,8 @@ export const get_transcript = async (
 
     console.log(`📝 Transcribing audio...`);
     const stream = fs.createReadStream(currentFilePath);
-    
+
+    logger.info(`📝 Transcribing audio with Whisper...`);
     const completion = await groq.audio.transcriptions.create({
       file: stream,
       model: "whisper-large-v3",
@@ -83,15 +87,17 @@ export const get_transcript = async (
     const transcript = completion.text;
 
     if (!transcript) throw new Error('Failed to generate transcript');
-    console.log(`✅ Transcription complete (${transcript.length} chars)`);
+    console.log(`✅ Transcription complete (${transcript.length} chars)`); 
 
+    logger.info(`🧠 Generating ${purpose} with Llama 3.3...`);
     console.log(`🧠 Generating ${purpose}...`);
+
     const response = await groq.chat.completions.create({
       messages: [
         { 
           role: "user", 
           content: `You are an expert technical writer. Turn this transcript into a ${purpose}. 
-          
+          keep in mind no header like here is you content or not footer just main content and body.
           Transcript:
           ${transcript}` 
         }

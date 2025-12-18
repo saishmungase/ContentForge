@@ -25,12 +25,13 @@ export const handler: Handlers['ProcessContent'] = async (input, { logger }) => 
     
     logger.info('Processing started...', { url, to, purpose });
 
-    const content = await get_transcript(url, purpose);
+    const content = await get_transcript(url, purpose, logger);
     
     if (!content) {
       throw new Error('No content generated');
     }
 
+    logger.info(`📧 Sending email to ${to}...`);
     await mail_user(to, content);
     
     logger.info('✅ Workflow completed successfully!', { to });
