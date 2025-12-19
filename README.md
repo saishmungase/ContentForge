@@ -1,83 +1,156 @@
-# backbone
+# 🚀 ContentForge
 
-A Motia project created with the starter template.
+> **The Event-Driven AI Content Engine**  
+> *Built for the Backend Reloaded Hackathon using [Motia](https://motia.dev).*
 
-## What is Motia?
+**ContentForge** automates the tedious process of content repurposing. It takes any YouTube video or Short and instantly transforms it into a Blog Post, LinkedIn Article, or Tweet using state-of-the-art AI.
 
-Motia is an open-source, unified backend framework that eliminates runtime fragmentation by bringing **APIs, background jobs, queueing, streaming, state, workflows, AI agents, observability, scaling, and deployment** into one unified system using a single core primitive, the **Step**.
+Unlike traditional synchronous APIs that time out on large files, ContentForge uses **Motia's Event-Driven Architecture** to handle heavy media processing asynchronously, delivering production-grade reliability and zero-latency user feedback.
 
-## Quick Start
+---
+
+## 📋 Table of Contents
+
+- [🚀 ContentForge](#-contentforge)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [🏗️ Architecture](#️-architecture)
+  - [✨ Key Features](#-key-features)
+  - [🛠️ Tech Stack](#️-tech-stack)
+  - [🚀 Getting Started](#-getting-started)
+    - [1. Prerequisites](#1-prerequisites)
+    - [2. Installation](#2-installation)
+    - [3. Configuration (.env)](#3-configuration-env)
+    - [4. Run the Backend](#4-run-the-backend)
+  - [🧪 How to Test (The Demo Flow)](#-how-to-test-the-demo-flow)
+  - [🤝 Open Source Contribution](#-open-source-contribution)
+  - [👥 Team](#-team)
+  - [📜 License](#-license)
+
+---
+
+## 🏗️ Architecture
+
+ContentForge replaces a complex stack (Express + Redis + Worker + Python) with just **two Motia Steps**:
+
+<img src="./src/public/architecture.jpg" alt="ContentForge Architecture" width="100%">
+
+*The event-driven pipeline: The API (Left) responds instantly, while the Async Worker (Right) handles heavy AI processing.*
+
+## ✨ Key Features
+
+- **⚡ Zero-Latency API (Non-Blocking):** The API accepts the request and returns immediately. The heavy processing happens in the background, preventing HTTP timeouts.
+
+- **🌊 Streaming I/O:** Uses `youtube-dl-exec` with stream pipelines to download audio directly to disk, keeping memory usage low even for long videos.
+
+- **🛡️ Resilience by Default:**
+  - **Auto-Cleanup:** Implements `try...finally` blocks to ensure temp files are deleted even if the server crashes.
+  - **Smart Error Handling:** Distinguishes between Retriable Errors (Network blips) and Non-Retriable Errors (400 Bad Request), preventing infinite retry loops.
+
+- **🧠 Advanced AI Pipeline:**
+  - **Hearing:** `whisper-large-v3` for near-perfect transcription.
+  - **Thinking:** `llama-3.3-70b-versatile` on Groq LPU for instant text generation.
+
+## 🛠️ Tech Stack
+
+- **Framework:** [Motia](https://motia.dev/) (Unified Backend Runtime)
+- **AI Inference:** [Groq](https://groq.com/) (Llama 3.3 & Whisper)
+- **Media Processing:** `yt-dlp` / `youtube-dl-exec`
+- **Notifications:** `fastforwardit`
+- **Language:** TypeScript
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+
+- Node.js (v18 or v20 LTS recommended)
+- A [Groq API Key](https://console.groq.com/keys) (Free)
+- A Gmail account (App Password) for sending results
+
+### 2. Installation
 
 ```bash
-# Start the development server
+# Clone the repository
+git clone https://github.com/yourusername/content-forge.git
+cd content-forge
+
+# Install dependencies
+npm install
+```
+
+### 3. Configuration (.env)
+
+Create a `.env` file in the root directory:
+
+```env
+# AI Configuration
+GROQ_API_KEY=gsk_your_key_here
+
+# Email Configuration (For sending results)
+APP_MAIL=your-email@gmail.com
+APP_PASS=your-gmail-app-password
+```
+
+### 4. Run the Backend
+
+```bash
+# Start the Motia development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-This starts the Motia runtime and the **Workbench** - a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
+The server will start at `http://localhost:3000`. Open this URL to see the Motia Workbench and visualize the content-forge-flow.
 
-```bash
-# Test your first endpoint
-curl http://localhost:3000/hello
-```
+---
 
-## Step Types
+## 🧪 How to Test (The Demo Flow)
 
-Every Step has a `type` that defines how it triggers:
+1. **Open Workbench:** Go to `http://localhost:3000`
 
-| Type | When it runs | Use case |
-|------|--------------|----------|
-| **`api`** | HTTP request | REST APIs, webhooks |
-| **`event`** | Event emitted | Background jobs, workflows |
-| **`cron`** | Schedule | Cleanup, reports, reminders |
+2. **Send a Request:** Use Postman, Curl, or the Workbench "Test" tab:
 
-## Development Commands
+   ```bash
+   POST http://localhost:3000/api/generate
+   Content-Type: application/json
+   
+   {
+     "url": "https://www.youtube.com/shorts/your-video-id",
+     "to": "your-email@gmail.com",
+     "purpose": "LinkedIn Post"
+   }
+   ```
 
-```bash
-# Start Workbench and development server
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+3. **Watch the Magic:**
+   - You will receive an immediate `200 OK` response
+   - Look at the Workbench Logs to see the async worker waking up:
+     - ⬇️ Downloading audio...
+     - 📝 Transcribing...
+     - 🧠 Generating content...
+     - 📧 Sending email...
 
-# Start production server (without hot reload)
-npm run start
-# or
-yarn start
-# or
-pnpm start
+4. **Check Inbox:** You will receive a beautifully formatted HTML email with your AI-generated post!
 
-# Generate TypeScript types from Step configs
-npm run generate-types
-# or
-yarn generate-types
-# or
-pnpm generate-types
+---
 
-# Build project for deployment
-npm run build
-# or
-yarn build
-# or
-pnpm build
-```
+## 🤝 Open Source Contribution
 
-## Project Structure
+During the development of ContentForge, I identified a DX gap in the Motia Workbench where logical connections (`emit`/`subscribe`) were not being visualized without explicit configuration.
 
-```
-steps/              # Your Step definitions (or use src/)
-motia.config.ts     # Motia configuration
-```
+I raised an issue and submitted a PR to improve the documentation and starter templates, ensuring future developers don't face the same friction.
 
-Steps are auto-discovered from your `steps/` or `src/` directories - no manual registration required.
+- **Issue:** [Link](https://github.com/MotiaDev/motia/issues/1084)
+- **PR:** [Link](https://github.com/MotiaDev/motia/pull/1086)
 
-## Learn More
+---
 
-- [Documentation](https://motia.dev/docs) - Complete guides and API reference
-- [Quick Start Guide](https://motia.dev/docs/getting-started/quick-start) - Detailed getting started tutorial
-- [Core Concepts](https://motia.dev/docs/concepts/overview) - Learn about Steps and Motia architecture
-- [Discord Community](https://discord.gg/motia) - Get help and connect with other developers
+## 👥 Team
+
+- **Saish Mungase** - Full Stack Developer & Architect
+
+---
+
+## 📜 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
