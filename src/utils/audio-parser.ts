@@ -51,6 +51,7 @@ async function downloadTempFile(url: string): Promise<string> {
 export const get_transcript = async (
   url: string, 
   purpose: string,
+  extra : string,
   logger : Logger,
   options: TranscriptOptions = {}
 ): Promise<string> => {
@@ -96,7 +97,7 @@ export const get_transcript = async (
       messages: [
         { 
           role: "user", 
-          content: `You are an expert technical writer. Turn this transcript into a ${purpose}. 
+          content: `You are an expert technical writer. Turn this transcript into a ${purpose}.${(extra.length > 0) && "I want it for " + extra} 
           keep in mind no header like here is you content or not footer just main content and body.
           Transcript:
           ${transcript}` 

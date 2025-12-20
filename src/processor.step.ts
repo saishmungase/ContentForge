@@ -6,7 +6,8 @@ import { mail_user } from './utils/email-manager';
 const inputSchema = z.object({
   url: z.string(),
   to: z.string(),
-  purpose: z.string()
+  purpose: z.string(),
+  extra : z.string()
 });
 
 export const config: EventConfig = {
@@ -21,11 +22,11 @@ export const config: EventConfig = {
 
 export const handler: Handlers['ProcessContent'] = async (input, { logger }) => {
   try {
-    const { url, to, purpose } = input;
+    const { url, to, purpose, extra } = input;
     
-    logger.info('Processing started...', { url, to, purpose });
+    logger.info('Processing started...', { url, to, purpose, extra });
 
-    const content = await get_transcript(url, purpose, logger);
+    const content = await get_transcript(url, purpose, extra, logger);
     
     if (!content) {
       throw new Error('No content generated');

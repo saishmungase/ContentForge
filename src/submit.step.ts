@@ -4,7 +4,8 @@ import z from 'zod';
 const bodySchema = z.object({
   url: z.string().url('Invalid URL format'),
   to: z.string().email('Invalid email format'),
-  purpose: z.string().min(3, 'Purpose must be at least 3 characters')
+  purpose: z.string().min(3, 'Purpose must be at least 3 characters'),
+  extra : z.string()
 });
 
 export const config: ApiRouteConfig = {
@@ -29,13 +30,13 @@ export const config: ApiRouteConfig = {
 
 export const handler: Handlers['SubmitContent'] = async (req, { emit, logger }) => {
   try {
-    const { url, to, purpose } = req.body;
+    const { url, to, purpose, extra } = req.body;
     
-    logger.info('Received new content request', { url, to, purpose });
+    logger.info('Received new content request', { url, to, purpose, extra });
 
     await emit({
       topic: 'content.requested',
-      data: { url, to, purpose }
+      data: { url, to, purpose, extra }
     });
 
     return { 
