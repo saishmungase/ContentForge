@@ -138,7 +138,9 @@ During the development of ContentForge, I identified a DX gap in the Motia Workb
 
 I raised an issue and submitted a PR to improve the documentation and starter templates, ensuring future developers don't face the same friction.
 
-- **Issue:** [Link](https://github.com/MotiaDev/motia/issues/1084)
+- **Issue-1:** [Link](https://github.com/MotiaDev/motia/issues/1102)
+- **Issue-2:**
+[Link](https://github.com/MotiaDev/motia/issues/1084)
 - **PR:** [Link](https://github.com/MotiaDev/motia/pull/1086)
 
 ---
